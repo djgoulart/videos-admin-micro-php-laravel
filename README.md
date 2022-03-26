@@ -1,29 +1,16 @@
 
-# Laravel 9.x - Quick Start (Laravel 9.x + Docker)
+# Laravel 9.x - Videos Catalog Admin
 
-## Rodar o Laravel
+## Rodar o Projeto
 
 Clone Repositório
 ```sh
-git clone https://github.com/codeedu/micro-admin-videos-php.git laravel9
+git clone https://github.com/djgoulart/videos-admin-micro-php-laravel videos-admin
 ```
 
 ```sh
-cd laravel9/
+cd videos-admin/
 ```
-
-
-Alterne de branch
-```sh
-git checkout laravel-9-quick-start
-```
-
-
-Remova o versionamento
-```sh
-rm -rf .git/
-```
-
 
 Crie o Arquivo .env
 ```sh
@@ -33,7 +20,7 @@ cp .env.example .env
 
 Atualize as variáveis de ambiente do arquivo .env
 ```dosini
-APP_NAME="Full Cycle"
+APP_NAME="Video Admin"
 APP_URL=http://localhost:8000
 
 DB_CONNECTION=mysql
@@ -79,3 +66,21 @@ php artisan key:generate
 
 Acesse o projeto
 [http://localhost:8000](http://localhost:8000)
+
+<br />
+
+## Rodar os Testes
+
+Acesse o container app
+```sh
+docker-compose exec app bash
+```
+
+```sh
+php artisan test
+```
+ou
+
+```sh
+./vendor/bin/phpunit
+```
