@@ -23,8 +23,15 @@ class CategoryEloquentRepository implements CategoryRepositoryInterface
         string $orderColumn = 'id',
         string $order = 'DESC'
     ): array {
-        //TODO Criar testes e implementação.
-        return [];
+        $categories = $this->model
+            ->where(function ($query) use ($filter) {
+                if ($filter)
+                    $query->where('name', 'LIKE', "%{$filter}%");
+            })
+            ->orderBy('id', $order)
+            ->get();
+
+        return $categories->toArray();
     }
 
     public function paginate(string $filter = '', string $orderColumn = 'id', string $order = 'DESC', int $page = 1, int $pageLimit = 15): PaginationInterface
@@ -72,7 +79,7 @@ class CategoryEloquentRepository implements CategoryRepositoryInterface
         return true;
     }
 
-    private function toCategory(object $object): Category
+    public function toCategory(object $object): Category
     {
         return new Category(
             id: $object->id,

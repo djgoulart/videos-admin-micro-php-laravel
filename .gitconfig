@@ -2,4 +2,4 @@
 	email = diegogoulart.aws@gmail.com
 	name = Diego Goulart
 [credential]
-	helper = "!f() { /var/www/.vscode-server/bin/c722ca6c7eed3d7987c0d5c3df5c45f6b15e77d1/node /tmp/vscode-remote-containers-6bf6dbf7158701fc6a2400b171dfedf6acb4b3aa.js $*; }; f"
+	helper = "!f() { /var/www/.vscode-server/bin/c722ca6c7eed3d7987c0d5c3df5c45f6b15e77d1/node /tmp/vscode-remote-containers-6f5a61fa7359fcbaa6a33063f0c674f32d24285b.js $*; }; f"

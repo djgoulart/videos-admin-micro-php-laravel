@@ -7,6 +7,7 @@ use App\Repositories\Eloquent\CategoryEloquentRepository;
 use Core\Domain\Exception\NotFoundException;
 use Core\Domain\Entity\Category as CategoryEntity;
 use Core\Domain\Repository\CategoryRepositoryInterface;
+use Core\Domain\Repository\PaginationInterface;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use PhpParser\Node\Stmt\TryCatch;
@@ -55,7 +56,6 @@ class CategoryEloquentRepositoryTest extends TestCase
 
     public function test_it_should_throw_if_not_found_a_category_searching_by_id()
     {
-
         try {
             $this->repository->findById('fakeID');
 
@@ -63,5 +63,35 @@ class CategoryEloquentRepositoryTest extends TestCase
         } catch (Throwable $th) {
             $this->assertInstanceOf(NotFoundException::class, $th);
         }
+    }
+
+    public function test_it_should_find_all_categories()
+    {
+        $categories = Model::factory()->count(10)->create();
+
+        $response = $this->repository->findAll();
+
+        $this->assertCount(count($categories), $response);
+    }
+
+    public function test_it_should_paginate_categories()
+    {
+        $pageLimit = 15;
+        $categories = Model::factory()->count(20)->create();
+
+        $response = $this->repository->paginate();
+
+        $this->assertInstanceOf(PaginationInterface::class, $response);
+        $this->assertCount($pageLimit, $response->items());
+        $this->assertEquals(count($categories), $response->total());
+    }
+
+    public function test_it_should_paginate_categories_without_data()
+    {
+        $response = $this->repository->paginate();
+
+        $this->assertInstanceOf(PaginationInterface::class, $response);
+        $this->assertCount(0, $response->items());
+        $this->assertEquals(0, $response->total());
     }
 }
