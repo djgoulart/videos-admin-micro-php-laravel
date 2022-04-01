@@ -94,4 +94,59 @@ class CategoryEloquentRepositoryTest extends TestCase
         $this->assertCount(0, $response->items());
         $this->assertEquals(0, $response->total());
     }
+
+    public function test_it_should_throw_when_to_trying_update_a_not_found_category()
+    {
+        try {
+            $category = new CategoryEntity(name: 'Test Category');
+            $this->repository->update($category);
+
+            $this->assertTrue(false);
+        } catch (Throwable $th) {
+            $this->assertInstanceOf(NotFoundException::class, $th, "Category with id $category->id not found");
+        }
+    }
+
+    public function test_it_should_update_a_category()
+    {
+        $categoryDb = Model::factory(['name' => 'Test Category'])->create();
+
+        $category = new CategoryEntity(id: $categoryDb->id, name: 'name updated');
+
+        $response = $this->repository->update($category);
+
+        $this->assertInstanceOf(CategoryEntity::class, $response);
+        $this->assertNotEquals($categoryDb->name, $response->name);
+        $this->assertEquals('name updated', $response->name);
+    }
+
+    public function test_it_should_throw_when_trying_to_delete_a_not_found_category()
+    {
+        try {
+            $this->repository->delete('fake_id');
+
+            $this->assertTrue(false);
+        } catch (Throwable $th) {
+            $this->assertInstanceOf(NotFoundException::class, $th, "Category with id fake_id not found");
+        }
+    }
+
+    public function test_it_should_delete_a_category()
+    {
+        $categoryDb = Model::factory(['name' => 'Test Category'])->create();
+
+        $category = new CategoryEntity(
+            id: $categoryDb->id,
+            name: $categoryDb->name,
+            description: $categoryDb->description,
+            isActive: $categoryDb->is_active,
+            createdAt: $categoryDb->created_at,
+            updatedAt: $categoryDb->updated_at,
+        );
+
+        $response = $this->repository->delete($category->id);
+
+        $this->assertIsBool($response);
+        $this->assertTrue($response);
+    }
 }
