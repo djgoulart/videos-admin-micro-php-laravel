@@ -41,7 +41,7 @@ class CategoryEloquentRepository implements CategoryRepositoryInterface
             $query->where('name', 'LIKE', "%{$filter}%");
         }
         $query->orderBy('id', $order);
-        $paginator = $query->paginate();
+        $paginator = $query->paginate($pageLimit);
 
         return new PaginationPresenter($paginator);
     }
@@ -100,7 +100,7 @@ class CategoryEloquentRepository implements CategoryRepositoryInterface
             id: $object->id,
             name: $object->name,
             description: $object->description,
-            isActive: $object->is_active,
+            isActive: (bool) $object->is_active,
             createdAt: $object->created_at,
             updatedAt: $object->updated_at,
         );
