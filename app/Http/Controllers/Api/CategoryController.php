@@ -4,15 +4,22 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCategoryRequest;
+use App\Http\Requests\UpdateCategoryRequest;
 use App\Http\Resources\CategoryResource;
+use App\Models\Category;
+use App\Repositories\Eloquent\CategoryEloquentRepository;
 use Core\UseCase\Category\{
     CreateCategoryUseCase,
+    DeleteCategoryUseCase,
     FindCategoryByIdUseCase,
-    ListCategoriesUseCase
+    ListCategoriesUseCase,
+    UpdateCategoryUseCase
 };
 use Core\UseCase\DTO\Category\CategoryInputDto;
 use Core\UseCase\DTO\Category\CreateCategoryInputDto;
+use Core\UseCase\DTO\Category\DeleteCategoryInputDto;
 use Core\UseCase\DTO\Category\ListCategoriesInputDto;
+use Core\UseCase\DTO\Category\UpdateCategoryInputDto;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -69,11 +76,34 @@ class CategoryController extends Controller
             ->setStatusCode(Response::HTTP_CREATED);
     }
 
-    public function update()
+    public function update(UpdateCategoryRequest $request, UpdateCategoryUseCase $useCase, string $id)
     {
+        $model = new Category();
+        $repository = new CategoryEloquentRepository($model);
+        $findCategoryUseCase = new FindCategoryByIdUseCase($repository);
+        $category = $findCategoryUseCase->execute(new CategoryInputDto($id));
+
+        $updatedCategory = $useCase->execute(new UpdateCategoryInputDto(
+            id: $id,
+            name: $request->name,
+            description: $request->description ?? $category->description
+        ));
+
+        return (new CategoryResource(collect($updatedCategory)))
+            ->response()
+            ->setStatusCode(Response::HTTP_CREATED);
     }
 
-    public function destroy()
+    public function destroy(DeleteCategoryUseCase $useCase, string $id)
     {
+        $model = new Category();
+        $repository = new CategoryEloquentRepository($model);
+        $findCategoryUseCase = new FindCategoryByIdUseCase($repository);
+        $findCategoryUseCase->execute(new CategoryInputDto($id));
+
+        $deletedCategory = $useCase->execute(new DeleteCategoryInputDto(id: $id));
+        return (new CategoryResource(collect($deletedCategory)))
+            ->response()
+            ->setStatusCode(Response::HTTP_NO_CONTENT);
     }
 }
