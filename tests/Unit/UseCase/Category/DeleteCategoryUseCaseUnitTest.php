@@ -25,7 +25,9 @@ class DeleteCategoryUseCaseUnitTest extends TestCase
         ]);
 
         $this->mockRepo = Mockery::mock(stdClass::class, CategoryRepositoryInterface::class);
-        $this->mockRepo->shouldReceive('delete')->andReturn(true);
+        $this->mockRepo->shouldReceive('delete')
+            ->once()
+            ->andReturn(true);
 
         $this->mockInputDto = Mockery::mock(DeleteCategoryInputDto::class, [
             $id
@@ -36,17 +38,6 @@ class DeleteCategoryUseCaseUnitTest extends TestCase
 
         $this->assertInstanceOf(DeleteCategoryOutputDto::class, $useCaseResponse);
         $this->assertTrue($useCaseResponse->success);
-
-        /**
-         * Spies
-         */
-        $this->spy = Mockery::spy(stdClass::class, CategoryRepositoryInterface::class);
-        $this->spy->shouldReceive('delete')->andReturn(true);
-
-        $useCase = new DeleteCategoryUseCase($this->spy);
-        $useCase->execute($this->mockInputDto);
-
-        $this->spy->shouldHaveReceived('delete');
     }
 
     public function test_if_fail_to_delete_a_category()
@@ -60,7 +51,9 @@ class DeleteCategoryUseCaseUnitTest extends TestCase
         ]);
 
         $this->mockRepo = Mockery::mock(stdClass::class, CategoryRepositoryInterface::class);
-        $this->mockRepo->shouldReceive('delete')->andReturn(false);
+        $this->mockRepo->shouldReceive('delete')
+            ->once()
+            ->andReturn(false);
 
         $this->mockInputDto = Mockery::mock(DeleteCategoryInputDto::class, [
             $id

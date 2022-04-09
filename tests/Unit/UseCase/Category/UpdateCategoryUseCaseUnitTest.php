@@ -25,11 +25,11 @@ class UpdateCategoryUseCaseUnitTest extends TestCase
             $id, $categoryName, $categoryDesc
         ]);
 
-        $this->mockEntity->shouldReceive('update');
+        $this->mockEntity->shouldReceive('update')->once();
 
         $this->mockRepository = Mockery::mock(stdClass::class, CategoryRepositoryInterface::class);
-        $this->mockRepository->shouldReceive('findById')->andReturn($this->mockEntity);
-        $this->mockRepository->shouldReceive('update')->andReturn($this->mockEntity);
+        $this->mockRepository->shouldReceive('findById')->once()->andReturn($this->mockEntity);
+        $this->mockRepository->shouldReceive('update')->once()->andReturn($this->mockEntity);
 
         $this->mockInputDto = Mockery::mock(UpdateCategoryInputDto::class, [
             $id,
@@ -40,19 +40,6 @@ class UpdateCategoryUseCaseUnitTest extends TestCase
         $useCaseResponse = $useCase->execute($this->mockInputDto);
 
         $this->assertInstanceOf(UpdateCategoryOutputDto::class, $useCaseResponse);
-
-        /**
-         * Spies
-         */
-        $this->spy = Mockery::spy(stdClass::class, CategoryRepositoryInterface::class);
-        $this->spy->shouldReceive('findById')->andReturn($this->mockEntity);
-        $this->spy->shouldReceive('update')->andReturn($this->mockEntity);
-
-        $useCase = new UpdateCategoryUseCase($this->spy);
-        $useCase->execute($this->mockInputDto);
-
-        $this->spy->shouldHaveReceived('findById');
-        $this->spy->shouldHaveReceived('update');
 
         Mockery::close();
     }
