@@ -6,10 +6,10 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Models\Category;
 use App\Repositories\Eloquent\CategoryEloquentRepository;
+use Core\Domain\Exception\NotFoundException;
 use Core\UseCase\Category\CreateCategoryUseCase;
+use Core\UseCase\Category\FindCategoryByIdUseCase;
 use Core\UseCase\Category\ListCategoriesUseCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -61,5 +61,35 @@ class CategoryControllerTest extends TestCase
 
         $this->assertInstanceOf(JsonResponse::class, $sut);
         $this->assertEquals(Response::HTTP_CREATED, $sut->status());
+    }
+
+    public function test_show_method()
+    {
+        $category = Category::factory()->create();
+        $useCase = new FindCategoryByIdUseCase($this->repository);
+
+        $sut = $this->controller->show(
+            useCase: $useCase,
+            id: $category->id
+        );
+
+        $this->assertInstanceOf(JsonResponse::class, $sut);
+        $this->assertEquals(Response::HTTP_OK, $sut->status());
+    }
+
+    public function test_show_method_with_category_not_found()
+    {
+        try {
+            $useCase = new FindCategoryByIdUseCase($this->repository);
+
+            $this->controller->show(
+                useCase: $useCase,
+                id: 'fake_id'
+            );
+
+            $this->assertTrue(false);
+        } catch (\Throwable $th) {
+            $this->assertInstanceOf(NotFoundException::class, $th);
+        }
     }
 }
