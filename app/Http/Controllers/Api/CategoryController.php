@@ -7,8 +7,10 @@ use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use Core\UseCase\Category\{
     CreateCategoryUseCase,
+    FindCategoryByIdUseCase,
     ListCategoriesUseCase
 };
+use Core\UseCase\DTO\Category\CategoryInputDto;
 use Core\UseCase\DTO\Category\CreateCategoryInputDto;
 use Core\UseCase\DTO\Category\ListCategoriesInputDto;
 use Illuminate\Http\Request;
@@ -42,8 +44,14 @@ class CategoryController extends Controller
             ]);
     }
 
-    public function show()
+    public function show(FindCategoryByIdUseCase $useCase, string $id)
     {
+        $category = $useCase->execute(
+            new CategoryInputDto(id: $id)
+        );
+
+        return (new CategoryResource(collect($category)))
+            ->response();
     }
 
     public function store(StoreCategoryRequest $request, CreateCategoryUseCase $useCase)
